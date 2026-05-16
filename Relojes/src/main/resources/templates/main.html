@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LÆSE — Colección Premium</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg-body:   #0d0d0d;
+            --bg-header: #00402e;
+            --bg-footer: #0a0a0a;
+            --accent:    #d4af37;
+        }
+
+        body { background-color: var(--bg-body); color: #f5f5f5; }
+
+        /* ── NAVBAR ── */
+        .navbar-laese {
+            background-color: var(--bg-header);
+            padding: 1rem 2rem;
+        }
+        .navbar-laese .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            letter-spacing: 0.3em;
+            color: var(--accent);
+        }
+
+        /* ── TARJETAS ── */
+        .tarjeta-reloj {
+            background-color: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        .tarjeta-reloj:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 30px rgba(212,175,55,0.2);
+        }
+        .tarjeta-reloj img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+        }
+        .tarjeta-reloj .card-body {
+            padding: 1.2rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .tarjeta-reloj h5 {
+            color: var(--accent);
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        .tarjeta-reloj p {
+            font-size: 0.85rem;
+            color: #bbb;
+            line-height: 1.5;
+            flex: 1;
+        }
+        .acciones-tarjeta {
+            display: flex;
+            gap: 6px;
+            margin-top: 0.8rem;
+        }
+
+        /* ── FOOTER ── */
+        footer {
+            background-color: var(--bg-footer);
+            color: #aaa;
+            border-top: 1px solid #222;
+            margin-top: 4rem;
+        }
+        footer h5 { color: var(--accent); margin-bottom: 1rem; }
+        footer a  { color: #aaa; text-decoration: none; }
+        footer a:hover { color: var(--accent); }
+        .footer-bottom {
+            border-top: 1px solid #222;
+            padding: 1rem 0;
+            text-align: center;
+            font-size: 0.8rem;
+            color: #555;
+        }
+
+        /* ── MODALES ── */
+        .modal-content {
+            background-color: #1a1a1a;
+            color: #f5f5f5;
+            border: 1px solid #333;
+        }
+        .modal-header { border-bottom: 1px solid #333; }
+        .modal-footer { border-top:    1px solid #333; }
+        .form-control, .form-select, textarea {
+            background-color: #0d0d0d;
+            border: 1px solid #444;
+            color: #f5f5f5;
+        }
+        .form-control:focus, .form-select:focus, textarea:focus {
+            background-color: #0d0d0d;
+            color: #f5f5f5;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 0.2rem rgba(212,175,55,0.25);
+        }
+        .btn-gold {
+            background-color: var(--accent);
+            color: #0a0a0a;
+            font-weight: bold;
+            border: none;
+        }
+        .btn-gold:hover { background-color: #c9a227; color: #0a0a0a; }
+
+        /* ── TEMA CLARO ── */
+        body.tema-claro {
+            --bg-body: #f0f0f0;
+            --bg-header: #1a6b4a;
+            --bg-footer: #e0e0e0;
+            color: #111;
+        }
+        body.tema-claro .tarjeta-reloj { background-color: #fff; border-color: #ddd; }
+        body.tema-claro .tarjeta-reloj p { color: #555; }
+        body.tema-claro footer { color: #444; }
+    </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════ NAVBAR -->
+<nav class="navbar navbar-laese navbar-expand-lg">
+    <div class="container-fluid">
+        <span class="logo">LÆSE</span>
+
+        <div class="d-flex align-items-center gap-2 ms-auto flex-wrap">
+
+            <div class="input-group" style="max-width:300px;">
+                <input type="text" id="inputBusqueda" class="form-control form-control-sm"
+                       placeholder="Buscar reloj...">
+                <button class="btn btn-gold btn-sm" id="btnBuscar">
+                    <i class="bi bi-search"></i>
+                </button>
+            </div>
+
+            <select class="form-select form-select-sm" id="selectorTema" style="max-width:160px;">
+                <option value="oscuro">Modo Oscuro</option>
+                <option value="claro">Modo Claro</option>
+                <option value="personalizado">Personalizar...</option>
+            </select>
+
+            <button class="btn btn-gold btn-sm"
+                    data-bs-toggle="modal" data-bs-target="#modalAñadir">
+                <i class="bi bi-plus-lg"></i> Nuevo Reloj
+            </button>
+        </div>
+    </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════ CONTENIDO -->
+<main class="container py-5">
+    <h3 class="mb-4" style="letter-spacing:0.15em; color:#d4af37;">
+        Colección Exclusiva
+    </h3>
+    <div id="contenedorTarjetas"
+         class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        <div class="col-12 text-center text-secondary py-5">
+            <div class="spinner-border text-warning" role="status"></div>
+            <p class="mt-2">Cargando colección...</p>
+        </div>
+    </div>
+</main>
+
+<!-- ═══════════════════════════════════════════ FOOTER -->
+<footer class="pt-5 pb-3">
+    <div class="container">
+        <div class="row g-4 mb-4">
+            <div class="col-md-3">
+                <h5>LÆSE Gallery</h5>
+                <p class="small">Expertos en relojería de lujo desde 2026.</p>
+                <div class="d-flex gap-2 mt-2">
+                    <a href="#" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-instagram"></i>
+                    </a>
+                    <a href="#" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-twitter-x"></i>
+                    </a>
+                    <a href="#" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-facebook"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <h5>Legal</h5>
+                <ul class="list-unstyled small">
+                    <li><a href="#">Aviso Legal</a></li>
+                    <li><a href="#">Política de Privacidad</a></li>
+                    <li><a href="#">Política de Cookies</a></li>
+                    <li><a href="#">Términos y Condiciones</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3">
+                <h5>Contacto</h5>
+                <ul class="list-unstyled small">
+                    <li><i class="bi bi-geo-alt me-1"></i>Calle Serrano 45, Madrid</li>
+                    <li><i class="bi bi-telephone me-1"></i>+34 912 345 678</li>
+                    <li><i class="bi bi-envelope me-1"></i>info@laesegallery.com</li>
+                </ul>
+            </div>
+            <div class="col-md-3">
+                <h5>Newsletter</h5>
+                <p class="small">Suscríbete para recibir novedades.</p>
+                <div class="input-group input-group-sm">
+                    <input type="email" class="form-control" placeholder="Tu email...">
+                    <button class="btn btn-gold">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        &copy; 2026 LAESE Gallery. Todos los derechos reservados. Proyecto Final LM.
+    </div>
+</footer>
+
+<!-- ═══════════════════════════════════════════ MODAL — AÑADIR -->
+<div class="modal fade" id="modalAñadir" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-plus-circle me-2"></i>Añadir Nuevo Reloj
+                </h5>
+                <button type="button" class="btn-close btn-close-white"
+                        data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Título</label>
+                    <input type="text" id="nuevoTitulo" class="form-control"
+                           placeholder="Ej. Rolex Submariner">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Descripción</label>
+                    <textarea id="nuevoTexto" class="form-control" rows="4"
+                              placeholder="Detalles del reloj..."></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Ruta de imagen</label>
+                    <input type="text" id="nuevaImagen" class="form-control"
+                           placeholder="img/mi-reloj.png">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary"
+                        data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-gold" id="btnConfirmarAñadir">
+                    <i class="bi bi-save me-1"></i>Guardar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ MODAL — EDITAR -->
+<div class="modal fade" id="modalEditar" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-pencil-square me-2"></i>Editar Reloj
+                </h5>
+                <button type="button" class="btn-close btn-close-white"
+                        data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="editarId">
+                <div class="mb-3">
+                    <label class="form-label">Título</label>
+                    <input type="text" id="editarTitulo" class="form-control">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Descripción</label>
+                    <textarea id="editarTexto" class="form-control" rows="4"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Ruta de imagen</label>
+                    <input type="text" id="editarImagen" class="form-control">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary"
+                        data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-gold" id="btnConfirmarEditar">
+                    <i class="bi bi-check-lg me-1"></i>Actualizar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ MODAL — PERSONALIZAR -->
+<div class="modal fade" id="modalPersonalizar" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-palette me-2"></i>Personalizar Colores
+                </h5>
+                <button type="button" class="btn-close btn-close-white"
+                        data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Color Header</label>
+                    <input type="color" id="colorHeader"
+                           class="form-control form-control-color w-100" value="#00402e">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Color Fondo</label>
+                    <input type="color" id="colorMain"
+                           class="form-control form-control-color w-100" value="#0d0d0d">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Color Footer</label>
+                    <input type="color" id="colorFooter"
+                           class="form-control form-control-color w-100" value="#0a0a0a">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary"
+                        data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-gold" id="btnAplicarColor">
+                    <i class="bi bi-check-lg me-1"></i>Aplicar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ SCRIPTS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+
+    const API = '/api/relojes';
+    const contenedor = document.getElementById('contenedorTarjetas');
+
+    const modalAñadir     = new bootstrap.Modal(document.getElementById('modalAñadir'));
+    const modalEditar     = new bootstrap.Modal(document.getElementById('modalEditar'));
+    const modalPersonalizar = new bootstrap.Modal(document.getElementById('modalPersonalizar'));
+
+    // ── CARGAR / RENDERIZAR ──────────────────────────────────────────
+    async function cargarRelojes(buscar = '') {
+        const url = buscar ? `${API}?buscar=${encodeURIComponent(buscar)}` : API;
+        try {
+            const res    = await fetch(url);
+            const relojes = await res.json();
+            renderizarTarjetas(relojes);
+        } catch {
+            contenedor.innerHTML =
+                `<p class="text-danger text-center col-12">
+                    Error conectando con la API. Asegúrate de que Spring Boot está arrancado.
+                 </p>`;
+        }
+    }
+
+    function renderizarTarjetas(relojes) {
+        if (relojes.length === 0) {
+            contenedor.innerHTML =
+                `<p class="text-secondary text-center col-12">
+                    No se encontraron relojes.
+                 </p>`;
+            return;
+        }
+        contenedor.innerHTML = relojes.map(r => `
+            <div class="col">
+                <div class="tarjeta-reloj">
+                    <img src="${r.imagen}" alt="${r.titulo}"
+                         onerror="this.src='img/reloj1.jpg'">
+                    <div class="card-body">
+                        <h5>${r.titulo}</h5>
+                        <p>${r.texto}</p>
+                        <div class="acciones-tarjeta">
+                            <button class="btn btn-outline-warning btn-sm flex-fill"
+                                    onclick="abrirEditar(${r.id}, '${escapar(r.titulo)}',
+                                             '${escapar(r.texto)}', '${escapar(r.imagen)}')">
+                                <i class="bi bi-pencil"></i> Editar
+                            </button>
+                            <button class="btn btn-outline-danger btn-sm flex-fill"
+                                    onclick="eliminarReloj(${r.id})">
+                                <i class="bi bi-trash"></i> Eliminar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function escapar(str) {
+        return str.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+    }
+
+    // ── BUSCAR ───────────────────────────────────────────────────────
+    document.getElementById('btnBuscar').addEventListener('click', () => {
+        cargarRelojes(document.getElementById('inputBusqueda').value.trim());
+    });
+    document.getElementById('inputBusqueda').addEventListener('input', e => {
+        cargarRelojes(e.target.value.trim());
+    });
+
+    // ── CREAR ────────────────────────────────────────────────────────
+    document.getElementById('btnConfirmarAñadir').addEventListener('click', async () => {
+        const titulo = document.getElementById('nuevoTitulo').value.trim();
+        const texto  = document.getElementById('nuevoTexto').value.trim();
+        const imagen = document.getElementById('nuevaImagen').value.trim();
+
+        if (!titulo || !texto || !imagen) {
+            alert('Por favor rellena todos los campos.');
+            return;
+        }
+
+        await fetch(API, {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({ titulo, texto, imagen })
+        });
+
+        modalAñadir.hide();
+        document.getElementById('nuevoTitulo').value = '';
+        document.getElementById('nuevoTexto').value  = '';
+        document.getElementById('nuevaImagen').value = '';
+        cargarRelojes();
+    });
+
+    // ── EDITAR ───────────────────────────────────────────────────────
+    function abrirEditar(id, titulo, texto, imagen) {
+        document.getElementById('editarId').value     = id;
+        document.getElementById('editarTitulo').value = titulo;
+        document.getElementById('editarTexto').value  = texto;
+        document.getElementById('editarImagen').value = imagen;
+        modalEditar.show();
+    }
+
+    document.getElementById('btnConfirmarEditar').addEventListener('click', async () => {
+        const id     = document.getElementById('editarId').value;
+        const titulo = document.getElementById('editarTitulo').value.trim();
+        const texto  = document.getElementById('editarTexto').value.trim();
+        const imagen = document.getElementById('editarImagen').value.trim();
+
+        if (!titulo || !texto || !imagen) {
+            alert('Por favor rellena todos los campos.');
+            return;
+        }
+
+        await fetch(`${API}/${id}`, {
+            method:  'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({ titulo, texto, imagen })
+        });
+
+        modalEditar.hide();
+        cargarRelojes();
+    });
+
+    // ── ELIMINAR ─────────────────────────────────────────────────────
+    async function eliminarReloj(id) {
+        if (!confirm('¿Eliminar este reloj de la colección?')) return;
+        await fetch(`${API}/${id}`, { method: 'DELETE' });
+        cargarRelojes();
+    }
+
+    // ── TEMAS ────────────────────────────────────────────────────────
+    document.getElementById('selectorTema').addEventListener('change', e => {
+        const tema = e.target.value;
+        document.body.classList.remove('tema-claro');
+
+        if (tema === 'claro') {
+            document.body.classList.add('tema-claro');
+        } else if (tema === 'oscuro') {
+            document.documentElement.style.setProperty('--bg-body',   '#0d0d0d');
+            document.documentElement.style.setProperty('--bg-header', '#00402e');
+            document.documentElement.style.setProperty('--bg-footer', '#0a0a0a');
+        } else if (tema === 'personalizado') {
+            modalPersonalizar.show();
+            e.target.value = 'oscuro';
+        }
+    });
+
+    document.getElementById('btnAplicarColor').addEventListener('click', () => {
+        document.documentElement.style.setProperty(
+            '--bg-header', document.getElementById('colorHeader').value);
+        document.documentElement.style.setProperty(
+            '--bg-body',   document.getElementById('colorMain').value);
+        document.documentElement.style.setProperty(
+            '--bg-footer', document.getElementById('colorFooter').value);
+        modalPersonalizar.hide();
+    });
+
+    // ── INICIO ───────────────────────────────────────────────────────
+    cargarRelojes();
+
+</script>
+</body>
+</html>
