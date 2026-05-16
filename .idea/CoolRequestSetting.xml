@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CoolRequestSetting">
+    <option name="serializePaths">
+      <list>
+        <option value="C:\Users\sebas\.config\.cool-request\request\serialize\e33eabf7a13c43639e04c00be14b9048" />
+        <option value="C:\Users\sebas\.config\.cool-request\request\serialize\e314dc1eeb0042e78aa107040878f902" />
+        <option value="C:\Users\sebas\.config\.cool-request\request\serialize\925a6e90a15c41feaa0e0b4b37e07603" />
+        <option value="C:\Users\sebas\.config\.cool-request\request\serialize\8d26b4a6379e49b2bb88e225aef4b925" />
+      </list>
+    </option>
     <option name="projectCachePath" value="project-7a3fa4fe-88c1-4ad7-9452-77d24b42d305" />
   </component>
 </project>
