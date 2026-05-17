@@ -75,6 +75,13 @@ public class RelojService {
         return relojes;
     }
 
+    public Reloj obtenerPorId(Long id) {
+        return relojes.stream()
+                .filter(reloj -> reloj.getId().equals(id))
+                .findFirst()
+                .orElse(null);
+    }
+
     // POST
     public Reloj guardar(Reloj reloj) {
         relojes.add(reloj);
