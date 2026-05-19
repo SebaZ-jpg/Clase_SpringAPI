@@ -1,13 +1,20 @@
 package GaleriaRelojes.model;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "reloj")
 public class Reloj {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String titulo;
     private String texto;
     private String imagen;
 
-    // Constructor vacío
+    // Constructor vacío (requerido por JPA)
     public Reloj() {
     }
 
