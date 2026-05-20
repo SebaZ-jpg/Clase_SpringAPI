@@ -14,11 +14,9 @@ public class Reloj {
     private String texto;
     private String imagen;
 
-    // Constructor vacío (requerido por JPA)
     public Reloj() {
     }
 
-    // Constructor completo
     public Reloj(Long id, String titulo, String texto, String imagen) {
         this.id = id;
         this.titulo = titulo;
@@ -26,7 +24,6 @@ public class Reloj {
         this.imagen = imagen;
     }
 
-    // GETTERS Y SETTERS
 
     public Long getId() {
         return id;
